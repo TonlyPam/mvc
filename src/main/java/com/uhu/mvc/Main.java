@@ -20,9 +20,10 @@ import lombok.NoArgsConstructor;
 public class Main {
     public static void main(String[] args) throws Exception {
         PathRouter router = new AbstractPathRouter()
-                .addGet("/hello", metadata -> {
+                .addGet("/hello/{name}/{age}", metadata -> {
                     metadata.setRespContentType(ContentType.JSON);
-                    return new Student("zhangsan", 18);
+                    return new Student(metadata.getPathVariable("name"),
+                            metadata.getPathVariable("age", Integer.class));
                 });
 
         JettyWebServer server = new JettyWebServer(router);

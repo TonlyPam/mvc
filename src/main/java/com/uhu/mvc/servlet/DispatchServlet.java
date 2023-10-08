@@ -78,7 +78,8 @@ public class DispatchServlet extends HttpServlet {
                 resp.setStatus(500);
                 resp.setContentType(ContentType.TEXT_HTML.getValue());
                 PrintWriter writer = resp.getWriter();
-                Arrays.stream(e.getStackTrace()).forEach(stackTraceElement -> writer.print(stackTraceElement.toString()));
+                writer.println(e.getClass().getTypeName() + ":" + e.getMessage());
+                Arrays.stream(e.getStackTrace()).forEach(stackTraceElement -> writer.println(stackTraceElement.toString()));
                 writer.close();
                 return;
             }

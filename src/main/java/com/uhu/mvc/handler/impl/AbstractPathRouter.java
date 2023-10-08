@@ -15,8 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AbstractPathRouter implements PathRouter {
 
-    private final Map<String, ExceptionHandler<Throwable>> exceptionHandlerMap = new ConcurrentHashMap<>();
+    private static final ThreadLocal<Map<String, String>> PATH_VARIABLE_MAP_HOLDER = new ThreadLocal<>();
 
+    private final Map<String, ExceptionHandler<Throwable>> exceptionHandlerMap = new ConcurrentHashMap<>();
     private final Map<String, PathHandler> getHandlerMap = new ConcurrentHashMap<>();
     private final Map<String, PathHandler> postHandlerMap = new ConcurrentHashMap<>();
     private final Map<String, PathHandler> putHandlerMap = new ConcurrentHashMap<>();
@@ -65,7 +66,7 @@ public class AbstractPathRouter implements PathRouter {
      * @return 路径变量集合
      */
     public static Map<String, String> getPathVariableMap() {
-        return new ThreadLocal<Map<String, String>>().get();
+        return PATH_VARIABLE_MAP_HOLDER.get();
     }
 
     /**
@@ -100,7 +101,7 @@ public class AbstractPathRouter implements PathRouter {
         }
 
         // 匹配成功
-        new ThreadLocal<Map<String, String>>().set(pathVariableMap);
+        PATH_VARIABLE_MAP_HOLDER.set(pathVariableMap);
         return true;
     }
 

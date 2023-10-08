@@ -1,7 +1,9 @@
 package com.uhu.mvc.handler;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.ContentType;
 import cn.hutool.json.JSON;
+import cn.hutool.json.JSONException;
 import cn.hutool.json.JSONUtil;
 import com.uhu.mvc.handler.impl.AbstractPathRouter;
 import lombok.Data;
@@ -11,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @Description: 请求数据
@@ -63,7 +66,34 @@ public class RequestMetadata {
      * @param <T>
      * @return
      */
+    @SuppressWarnings("unchecked")
     public <T> T getPathVariable(String key, Class<T> clazz) {
-        return JSONUtil.toBean(pathVariableMap.get(key), clazz);
+        if (Objects.isNull(pathVariableMap)) return null;
+        String value = pathVariableMap.get(key);
+        try {
+            return JSONUtil.toBean(value, clazz);
+        } catch (JSONException e) {
+            if (Objects.isNull(value)) return null;
+            Object result = null;
+            if (Byte.class.equals(clazz)) result = Byte.valueOf(value);
+            if (Short.class.equals(clazz)) result = Short.valueOf(value);
+            if (Integer.class.equals(clazz)) result = Integer.valueOf(value);
+            if (Long.class.equals(clazz)) result = Long.valueOf(value);
+            if (Float.class.equals(clazz)) result = Float.valueOf(value);
+            if (Double.class.equals(clazz)) result = Double.valueOf(value);
+            if (Boolean.class.equals(clazz)) result = Boolean.valueOf(value);
+            if (Character.class.equals(clazz) && StrUtil.isNotBlank(value)) result = value.charAt(0);
+            return (T) result;
+        }
+    }
+
+    /**
+     * 获取路径变量
+     * @param key
+     * @return
+     */
+    public String getPathVariable(String key) {
+        if (Objects.isNull(pathVariableMap)) return null;
+        return pathVariableMap.get(key);
     }
 }
