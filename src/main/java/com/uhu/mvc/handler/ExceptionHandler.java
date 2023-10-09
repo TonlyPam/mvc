@@ -1,5 +1,7 @@
 package com.uhu.mvc.handler;
 
+import com.uhu.mvc.metadata.RequestMetadata;
+
 /**
  * @Description: 异常处理器
  * @Name: ExceptionHandler

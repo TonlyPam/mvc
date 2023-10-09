@@ -1,5 +1,7 @@
 package com.uhu.mvc.handler;
 
+import com.uhu.mvc.metadata.RequestMetadata;
+
 /**
  * @Description: 路径处理器
  * @Name: PathHandler
@@ -7,7 +9,7 @@ package com.uhu.mvc.handler;
  * @CreateTime: 2023/10/8 9:00
  */
 @FunctionalInterface
-public interface PathHandler {
+public interface PathHandler extends RequestHandler {
 
     /**
      * 请求数据集合

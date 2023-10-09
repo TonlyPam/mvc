@@ -1,9 +1,8 @@
-package com.uhu.mvc.handler.impl;
+package com.uhu.mvc.router.impl;
 
 import cn.hutool.http.ContentType;
-import com.uhu.mvc.handler.ExceptionHandler;
-import com.uhu.mvc.handler.PathHandler;
-import com.uhu.mvc.handler.PathRouter;
+import com.uhu.mvc.handler.*;
+import com.uhu.mvc.router.PathRouter;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +22,8 @@ public class AbstractPathRouter implements PathRouter {
     private final Map<String, PathHandler> postHandlerMap = new ConcurrentHashMap<>();
     private final Map<String, PathHandler> putHandlerMap = new ConcurrentHashMap<>();
     private final Map<String, PathHandler> deleteHandlerMap = new ConcurrentHashMap<>();
+    private final Map<String, List<PathInterceptor>> interceptorMap = new ConcurrentHashMap<>();
+    private final Map<PathInterceptor, InterceptHandler> interceptorHandlerMap = new ConcurrentHashMap<>();
     private final Map<String, Map<String, PathHandler>> methodMap = Map.of(
             "get", getHandlerMap,
             "post", postHandlerMap,
@@ -122,7 +123,7 @@ public class AbstractPathRouter implements PathRouter {
     }
 
     @Override
-    public PathRouter setGlobalRespContentType(ContentType contentType) {
+    public AbstractPathRouter setGlobalRespContentType(ContentType contentType) {
         if (Objects.isNull(contentType)) throw new IllegalArgumentException("响应类型不能是null");
         globalContentType = contentType;
         return this;
@@ -133,11 +134,34 @@ public class AbstractPathRouter implements PathRouter {
         return globalContentType;
     }
 
+    @Override
+    public AbstractPathRouter addInterceptor(List<String> paths, PathInterceptor interceptor) {
+        if (Objects.isNull(interceptor)) throw new IllegalArgumentException("拦截器不能为空");
+        paths.forEach(path -> {
+            interceptorMap.putIfAbsent(path, new LinkedList<>());
+            List<PathInterceptor> interceptors = interceptorMap.get(path);
+            interceptors.add(interceptor);
+        });
+        return this;
+    }
+
+    @Override
+    public AbstractPathRouter setInterceptResp(PathInterceptor interceptor, InterceptHandler handler) {
+        interceptorHandlerMap.put(interceptor, handler);
+        return this;
+    }
+
+    @Override
+    public InterceptHandler getInterceptResp(PathInterceptor interceptor) {
+        return interceptorHandlerMap.get(interceptor);
+    }
+
     /**
      * 检查异常合法性
      * @param causeClass 异常处理器
      */
     private void checkException(Class<?> causeClass) {
-        if (Objects.nonNull(exceptionHandlerMap.get(causeClass.getTypeName()))) throw new IllegalArgumentException("已存在此类型的异常处理器");
+        if (Objects.nonNull(exceptionHandlerMap.get(causeClass.getTypeName())))
+            throw new IllegalArgumentException("已存在此类型的异常处理器");
     }
 }

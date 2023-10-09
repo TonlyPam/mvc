@@ -1,11 +1,11 @@
-package com.uhu.mvc.handler;
+package com.uhu.mvc.metadata;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.ContentType;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONException;
 import cn.hutool.json.JSONUtil;
-import com.uhu.mvc.handler.impl.AbstractPathRouter;
+import com.uhu.mvc.router.impl.AbstractPathRouter;
 import lombok.Data;
 
 import javax.servlet.http.HttpServletRequest;
@@ -95,5 +95,14 @@ public class RequestMetadata {
     public String getPathVariable(String key) {
         if (Objects.isNull(pathVariableMap)) return null;
         return pathVariableMap.get(key);
+    }
+
+    /**
+     * 获取请求头
+     * @param key key
+     * @return value
+     */
+    public String getHeader(String key) {
+        return request.getHeader(key);
     }
 }

@@ -1,7 +1,13 @@
-package com.uhu.mvc.handler;
+package com.uhu.mvc.router;
 
 import cn.hutool.http.ContentType;
-import com.uhu.mvc.handler.impl.AbstractPathRouter;
+import com.uhu.mvc.handler.ExceptionHandler;
+import com.uhu.mvc.handler.InterceptHandler;
+import com.uhu.mvc.handler.PathHandler;
+import com.uhu.mvc.handler.PathInterceptor;
+import com.uhu.mvc.router.impl.AbstractPathRouter;
+
+import java.util.List;
 
 /**
  * @Description: 路径处理器
@@ -77,4 +83,27 @@ public interface PathRouter {
      * @return 响应类型
      */
     ContentType getGlobalRespContentType();
+
+    /**
+     * 添加一个拦截器
+     * @param paths 拦截的路径集合
+     * @param interceptor 拦截器
+     * @return 自身
+     */
+    PathRouter addInterceptor(List<String> paths, PathInterceptor interceptor);
+
+    /**
+     * 设置拦截器响应
+     * @param interceptor 拦截器
+     * @param handler 拦截器
+     * @return 自身
+     */
+    PathRouter setInterceptResp (PathInterceptor interceptor, InterceptHandler handler);
+
+    /**
+     * 通过拦截器获取响应
+     * @param interceptor 拦截器
+     * @return 响应
+     */
+    InterceptHandler getInterceptResp(PathInterceptor interceptor);
 }

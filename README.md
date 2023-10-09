@@ -25,8 +25,8 @@ package com.uhu.mvc;
 
 
 import cn.hutool.http.ContentType;
-import com.uhu.mvc.handler.PathRouter;
-import com.uhu.mvc.handler.impl.AbstractPathRouter;
+import com.uhu.mvc.router.PathRouter;
+import com.uhu.mvc.router.impl.AbstractPathRouter;
 import com.uhu.mvc.server.JettyWebServer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -77,4 +77,5 @@ class Student {
 - 获取请求param
 - 获取session
 - 获取pathVariable
+- 获取header
 - 设置响应类型`setRespContentType`

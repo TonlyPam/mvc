@@ -1,6 +1,6 @@
 package com.uhu.mvc.server;
 
-import com.uhu.mvc.handler.PathRouter;
+import com.uhu.mvc.router.PathRouter;
 import com.uhu.mvc.servlet.DispatchServlet;
 import lombok.Data;
 import lombok.experimental.Accessors;

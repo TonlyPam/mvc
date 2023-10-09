@@ -4,8 +4,8 @@ import cn.hutool.http.ContentType;
 import cn.hutool.json.JSONUtil;
 import com.uhu.mvc.handler.ExceptionHandler;
 import com.uhu.mvc.handler.PathHandler;
-import com.uhu.mvc.handler.PathRouter;
-import com.uhu.mvc.handler.RequestMetadata;
+import com.uhu.mvc.router.PathRouter;
+import com.uhu.mvc.metadata.RequestMetadata;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
