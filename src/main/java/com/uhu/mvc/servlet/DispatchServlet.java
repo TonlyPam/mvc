@@ -67,6 +67,7 @@ public class DispatchServlet extends HttpServlet {
         }
 
         RequestMetadata requestMetadata = new RequestMetadata(req, resp);
+        requestMetadata.setRespContentType(router.getGlobalRespContentType());
         Object handle;
         try {
             // 请求处理

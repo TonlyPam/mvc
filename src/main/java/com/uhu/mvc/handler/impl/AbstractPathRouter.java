@@ -1,5 +1,6 @@
 package com.uhu.mvc.handler.impl;
 
+import cn.hutool.http.ContentType;
 import com.uhu.mvc.handler.ExceptionHandler;
 import com.uhu.mvc.handler.PathHandler;
 import com.uhu.mvc.handler.PathRouter;
@@ -27,6 +28,8 @@ public class AbstractPathRouter implements PathRouter {
             "post", postHandlerMap,
             "put", putHandlerMap,
             "delete", deleteHandlerMap);
+
+    private ContentType globalContentType = ContentType.TEXT_HTML;
 
     @Override
     public AbstractPathRouter addGet(String path, PathHandler handler) {
@@ -116,6 +119,18 @@ public class AbstractPathRouter implements PathRouter {
     @Override
     public ExceptionHandler<Throwable> getExceptionHandler(Throwable e) {
         return exceptionHandlerMap.get(e.getClass().getTypeName());
+    }
+
+    @Override
+    public PathRouter setGlobalRespContentType(ContentType contentType) {
+        if (Objects.isNull(contentType)) throw new IllegalArgumentException("响应类型不能是null");
+        globalContentType = contentType;
+        return this;
+    }
+
+    @Override
+    public ContentType getGlobalRespContentType() {
+        return globalContentType;
     }
 
     /**

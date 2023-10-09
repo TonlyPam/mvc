@@ -1,5 +1,6 @@
 package com.uhu.mvc.handler;
 
+import cn.hutool.http.ContentType;
 import com.uhu.mvc.handler.impl.AbstractPathRouter;
 
 /**
@@ -64,4 +65,16 @@ public interface PathRouter {
      * @param e 异常
      */
     ExceptionHandler<Throwable> getExceptionHandler(Throwable e);
+
+    /**
+     * 设置全局的响应类型
+     * @return 自身
+     */
+    PathRouter setGlobalRespContentType(ContentType contentType);
+
+    /**
+     * 获取全局的响应类型
+     * @return 响应类型
+     */
+    ContentType getGlobalRespContentType();
 }
