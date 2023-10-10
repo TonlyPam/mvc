@@ -3,7 +3,9 @@ package com.uhu.mvc.servlet;
 import cn.hutool.http.ContentType;
 import cn.hutool.json.JSONUtil;
 import com.uhu.mvc.handler.ExceptionHandler;
+import com.uhu.mvc.handler.InterceptHandler;
 import com.uhu.mvc.handler.PathHandler;
+import com.uhu.mvc.interceptor.PathInterceptor;
 import com.uhu.mvc.router.PathRouter;
 import com.uhu.mvc.metadata.RequestMetadata;
 
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -24,6 +27,7 @@ import java.util.Objects;
  */
 public class DispatchServlet extends HttpServlet {
 
+    private static final Object NULL = new Object();
     private final PathRouter router;
 
     public DispatchServlet(PathRouter router) {
@@ -68,10 +72,21 @@ public class DispatchServlet extends HttpServlet {
 
         RequestMetadata requestMetadata = new RequestMetadata(req, resp);
         requestMetadata.setRespContentType(router.getGlobalRespContentType());
-        Object handle;
+
+        Object handle = NULL;
         try {
-            // 请求处理
-            handle = handler.handle(requestMetadata);
+            // 拦截器验证
+            List<PathInterceptor> interceptors = router.getInterceptors(req.getRequestURI());
+            for (PathInterceptor interceptor : interceptors) {
+                if (!Objects.equals(NULL, handle)) break;
+                if (!interceptor.handle(requestMetadata)) {
+                    InterceptHandler interceptResp = router.getInterceptResp(interceptor);
+                    handle = interceptResp.handle(requestMetadata);
+                }
+            }
+
+            // 未拦截,请求处理
+            if (Objects.equals(NULL, handle)) handle = handler.handle(requestMetadata);
         } catch (Throwable e) {
 
             ExceptionHandler<Throwable> exceptionHandler = router.getExceptionHandler(e);

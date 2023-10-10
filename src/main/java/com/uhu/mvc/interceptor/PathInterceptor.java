@@ -1,5 +1,6 @@
-package com.uhu.mvc.handler;
+package com.uhu.mvc.interceptor;
 
+import com.uhu.mvc.handler.RequestHandler;
 import com.uhu.mvc.metadata.RequestMetadata;
 
 /**

@@ -4,7 +4,8 @@ import cn.hutool.http.ContentType;
 import com.uhu.mvc.handler.ExceptionHandler;
 import com.uhu.mvc.handler.InterceptHandler;
 import com.uhu.mvc.handler.PathHandler;
-import com.uhu.mvc.handler.PathInterceptor;
+import com.uhu.mvc.interceptor.InterceptorSetter;
+import com.uhu.mvc.interceptor.PathInterceptor;
 import com.uhu.mvc.router.impl.AbstractPathRouter;
 
 import java.util.List;
@@ -90,15 +91,15 @@ public interface PathRouter {
      * @param interceptor 拦截器
      * @return 自身
      */
-    PathRouter addInterceptor(List<String> paths, PathInterceptor interceptor);
+    InterceptorSetter addInterceptor(List<String> paths, PathInterceptor interceptor);
 
     /**
      * 设置拦截器响应
-     * @param interceptor 拦截器
-     * @param handler 拦截器
+     * @param interceptor  路径拦截器
+     * @param handler 响应处理器
      * @return 自身
      */
-    PathRouter setInterceptResp (PathInterceptor interceptor, InterceptHandler handler);
+    PathRouter setInterceptResp(PathInterceptor interceptor, InterceptHandler handler);
 
     /**
      * 通过拦截器获取响应
@@ -106,4 +107,11 @@ public interface PathRouter {
      * @return 响应
      */
     InterceptHandler getInterceptResp(PathInterceptor interceptor);
+
+    /**
+     * 获取拦截器
+     * @param uri 资源
+     * @return 列表
+     */
+    List<PathInterceptor> getInterceptors(String uri);
 }
