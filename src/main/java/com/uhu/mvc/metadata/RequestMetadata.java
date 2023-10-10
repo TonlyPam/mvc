@@ -105,4 +105,14 @@ public class RequestMetadata {
     public String getHeader(String key) {
         return request.getHeader(key);
     }
+
+    /**
+     * 获取请求体
+     * @param clazz 类型
+     * @param <T> 类型
+     * @return 请求体对象
+     */
+    public <T> T getRequestBody(Class<T> clazz) {
+        return requestBody.toBean(clazz);
+    }
 }
