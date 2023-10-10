@@ -38,7 +38,7 @@ public class Main {
                             metadata.getPathVariable("age", Integer.class));
                 })
                 // 添加一个拦截器
-                .addInterceptor(List.of("/hello/zhangsa*/1**"), interceptor)
+                .addInterceptor(List.of("/hello/**"), interceptor, List.of("/hello/zhangsan/**"))
                 .setInterceptResp(metadata -> "拦截成功");
 
         new JettyWebServer(router).setHost("localhost").setPort(8080).run();

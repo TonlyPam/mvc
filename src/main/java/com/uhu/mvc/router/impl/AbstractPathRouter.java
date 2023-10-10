@@ -26,7 +26,9 @@ public class AbstractPathRouter implements PathRouter {
     private final Map<String, PathHandler> putHandlerMap = new ConcurrentHashMap<>();
     private final Map<String, PathHandler> deleteHandlerMap = new ConcurrentHashMap<>();
     private final Map<String, List<PathInterceptor>> interceptorMap = new ConcurrentHashMap<>();
+    private final Map<String, List<String>> excludeInterceptMap = new ConcurrentHashMap<>();
     private final Map<PathInterceptor, InterceptHandler> interceptorHandlerMap = new ConcurrentHashMap<>();
+
     private final Map<String, Map<String, PathHandler>> methodMap = Map.of(
             "get", getHandlerMap,
             "post", postHandlerMap,
@@ -102,11 +104,14 @@ public class AbstractPathRouter implements PathRouter {
     }
 
     @Override
-    public InterceptorSetter addInterceptor(List<String> paths, PathInterceptor interceptor) {
+    public InterceptorSetter addInterceptor(List<String> paths, PathInterceptor interceptor, List<String> excludePaths) {
         if (Objects.isNull(interceptor)) throw new IllegalArgumentException("拦截器不能为空");
         paths.forEach(path -> {
             interceptorMap.putIfAbsent(path, new LinkedList<>());
+            excludeInterceptMap.putIfAbsent(path + interceptor, new LinkedList<>());
+            List<String> excludePathList = excludeInterceptMap.get(path + interceptor);
             List<PathInterceptor> interceptors = interceptorMap.get(path);
+            excludePathList.addAll(excludePaths);
             interceptors.add(interceptor);
         });
         return new InterceptorSetterImpl(this, interceptor);
@@ -126,11 +131,29 @@ public class AbstractPathRouter implements PathRouter {
     @Override
     public List<PathInterceptor> getInterceptors(String uri) {
         List<PathInterceptor> interceptors = new LinkedList<>();
-        interceptorMap.forEach((key, value) -> {
-            if (matchUri(key, uri, "*")) {
-                interceptors.addAll(value);
+        for (Map.Entry<String, List<PathInterceptor>> entry : interceptorMap.entrySet()) {
+            // 不匹配直接下一个
+            String path = entry.getKey();
+            if (!matchUri(path, uri, "*")) continue;
+
+            // 获取拦截器列表
+            List<PathInterceptor> interceptorList = entry.getValue();
+            outer:
+            for (PathInterceptor interceptor : interceptorList) {
+
+                // 获取排除的路径
+                List<String> excludePaths = excludeInterceptMap.get(path + interceptor);
+                for (String excludePath : excludePaths) {
+
+                    // 如果是排除的路径，则换下一个拦截器
+                    if (matchUri(excludePath, uri, "*")) {
+                        continue outer;
+                    }
+                }
+                // 不是排除的路径，添加到返回
+                interceptors.add(interceptor);
             }
-        });
+        }
         return interceptors;
     }
 

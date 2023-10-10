@@ -8,6 +8,7 @@ import com.uhu.mvc.interceptor.InterceptorSetter;
 import com.uhu.mvc.interceptor.PathInterceptor;
 import com.uhu.mvc.router.impl.AbstractPathRouter;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -91,7 +92,18 @@ public interface PathRouter {
      * @param interceptor 拦截器
      * @return 自身
      */
-    InterceptorSetter addInterceptor(List<String> paths, PathInterceptor interceptor);
+    default InterceptorSetter addInterceptor(List<String> paths, PathInterceptor interceptor) {
+        return addInterceptor(paths, interceptor, new LinkedList<>());
+    }
+
+    /**
+     * 添加一个拦截器
+     * @param paths 拦截的路径集合
+     * @param interceptor 拦截器
+     * @param excludePaths 排除的路径集合
+     * @return 自身
+     */
+    InterceptorSetter addInterceptor(List<String> paths, PathInterceptor interceptor, List<String> excludePaths);
 
     /**
      * 设置拦截器响应
