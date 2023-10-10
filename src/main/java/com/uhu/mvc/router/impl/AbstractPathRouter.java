@@ -169,16 +169,31 @@ public class AbstractPathRouter implements PathRouter {
                         }
                     }
                     case "*" -> {
-                        if ("*".equals(template)) {
-                            continue;
-                        } else if ("**".equals(template)) {
-                            return true;
+                        try {
+                            boolean previousIsGeneric = false;
+                            // 字符逐个匹配
+                            for (int j = 0; j < template.length(); j++) {
+                                if (template.charAt(j) != '*') {
+                                    // 判断是否相等
+                                    if (template.charAt(j) != uriSplit[i].charAt(j)) {
+                                        return false;
+                                    } else {
+                                        previousIsGeneric = false;
+                                    }
+                                } else {
+                                    // 如果这个是通配符，上一个也是，那么就是匹配的
+                                    if (previousIsGeneric) return true;
+                                    previousIsGeneric = true;
+                                }
+                            }
+                        } catch (StringIndexOutOfBoundsException e) {
+                            return false;
                         }
                     }
                 }
 
                 // 普通路径
-                if (!template.equals(uriSplit[i])) {
+                if (!template.equals(uriSplit[i]) && "{}".equals(genericSign)) {
                     return false;
                 }
             }

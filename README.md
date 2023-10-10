@@ -68,7 +68,33 @@ class Student {
 
 启动即可
 
-## 二、关于RequestMetadata
+## 二、关于PathRouter
+
+进行请求的处理分发功能
+
+- 添加GET请求处理`PathRouter addGet(String path, PathHandler handler)`
+- 添加POST请求处理`PathRouter addPost(String path, PathHandler handler)`
+- 添加PUT请求处理`PathRouter addPut(String path, PathHandler handler)`
+- 添加DELETE请求处理`PathRouter addDelete(String path, PathHandler handler)`
+- 添加全局异常处理`<EX extends Throwable> AbstractPathRouter addExceptionAdvice(ExceptionHandler<EX> handler, Class<EX> causeClass)`
+- 设置全局响应类型`PathRouter setGlobalRespContentType(ContentType contentType)`
+
+### 关于拦截器的操作
+
+在这个框架中，建议使用PathInterceptor而非使用Servlet中的Filter，因为Interceptor的设置颗粒度可以更好的把控，同时支持`/*`和`**`的通配符
+
+`InterceptorSetter addInterceptor(List<String> paths, PathInterceptor interceptor)`
+
+添加完毕拦截器后会响应一个拦截器设置类型，需要设置拦截的结果返回
+
+```java
+PathRouter router = new AbstractPathRouter()
+// 添加一个拦截器
+                .addInterceptor(List.of("/hello/**"), interceptor)
+                .setInterceptResp(metadata -> "拦截成功");
+```
+
+## 三、关于RequestMetadata
 
 存储处理web请求的大部分功能
 
