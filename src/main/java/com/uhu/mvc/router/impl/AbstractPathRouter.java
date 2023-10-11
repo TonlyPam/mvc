@@ -7,8 +7,10 @@ import com.uhu.mvc.interceptor.PathInterceptor;
 import com.uhu.mvc.interceptor.impl.InterceptorSetterImpl;
 import com.uhu.mvc.router.PathRouter;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * @Description: 默认的路由
@@ -36,6 +38,7 @@ public class AbstractPathRouter implements PathRouter {
             "delete", deleteHandlerMap);
 
     private ContentType globalContentType = ContentType.TEXT_HTML;
+    private Function<HttpServletResponse, HttpServletResponse> setRespFunc = response -> response;
 
     @Override
     public AbstractPathRouter addGet(String path, PathHandler handler) {
@@ -155,6 +158,38 @@ public class AbstractPathRouter implements PathRouter {
             }
         }
         return interceptors;
+    }
+
+    @Override
+    public AbstractPathRouter setCors(String allowOrigin, List<String> allowMethods, List<String> allowHeaders) {
+        Function<HttpServletResponse, HttpServletResponse> previous = this.setRespFunc;
+        this.setRespFunc = response -> {
+            response = previous.apply(response);
+            response.setHeader("Access-Control-Allow-Origin", allowOrigin);
+            response.setHeader("Access-Control-Allow-Methods", list2String(allowMethods));
+            response.setHeader("Access-Control-Allow-Headers", list2String(allowHeaders));
+            return response;
+        };
+        return this;
+    }
+
+    @Override
+    public void setCors(HttpServletResponse response) {
+        this.setRespFunc.apply(response);
+    }
+
+    /**
+     * list转为string
+     * @param allowMethods 允许的方法
+     * @return 结果
+     */
+    private String list2String(List<String> allowMethods) {
+        if (allowMethods.size() != 0){
+            StringBuilder sb = new StringBuilder();
+            allowMethods.forEach(method -> sb.append(method).append(","));
+            return sb.delete(sb.length() - 1, sb.length()).toString();
+        }
+        return "";
     }
 
     /**

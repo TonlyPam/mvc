@@ -78,6 +78,7 @@ class Student {
 - 添加DELETE请求处理`PathRouter addDelete(String path, PathHandler handler)`
 - 添加全局异常处理`<EX extends Throwable> AbstractPathRouter addExceptionAdvice(ExceptionHandler<EX> handler, Class<EX> causeClass)`
 - 设置全局响应类型`PathRouter setGlobalRespContentType(ContentType contentType)`
+- 设置全局跨域`PathRouter setCors(String allowOrigin, List<String> allowMethods, List<String> allowHeaders);`
 
 ### 关于拦截器的操作
 

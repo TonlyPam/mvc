@@ -70,6 +70,7 @@ public class DispatchServlet extends HttpServlet {
             return;
         }
 
+        router.setCors(resp);
         RequestMetadata requestMetadata = new RequestMetadata(req, resp);
         requestMetadata.setRespContentType(router.getGlobalRespContentType());
 

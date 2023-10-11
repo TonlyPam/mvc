@@ -7,7 +7,9 @@ import com.uhu.mvc.handler.PathHandler;
 import com.uhu.mvc.interceptor.InterceptorSetter;
 import com.uhu.mvc.interceptor.PathInterceptor;
 import com.uhu.mvc.router.impl.AbstractPathRouter;
+import org.eclipse.jetty.http.HttpMethod;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -126,4 +128,19 @@ public interface PathRouter {
      * @return 列表
      */
     List<PathInterceptor> getInterceptors(String uri);
+
+    /**
+     * 设置跨域
+     * @param allowOrigin 允许来源地址
+     * @param allowMethods 允许的请求方法
+     * @param allowHeaders 允许的请求头
+     * @return 自身
+     */
+    PathRouter setCors(String allowOrigin, List<String> allowMethods, List<String> allowHeaders);
+
+    /**
+     * 给响应设置跨域
+     * @param response 响应
+     */
+    void setCors(HttpServletResponse response);
 }
