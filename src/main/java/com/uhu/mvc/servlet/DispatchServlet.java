@@ -35,6 +35,11 @@ public class DispatchServlet extends HttpServlet {
     }
 
     @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        dispatchRequest(req, resp, metadata -> NULL);
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PathHandler handler = router.getPathHandler("get", req.getRequestURI());
         dispatchRequest(req, resp, handler);
