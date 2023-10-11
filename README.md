@@ -80,6 +80,12 @@ class Student {
 - 设置全局响应类型`PathRouter setGlobalRespContentType(ContentType contentType)`
 - 设置全局跨域`PathRouter setCors(String allowOrigin, List<String> allowMethods, List<String> allowHeaders);`
 
+    样例：
+    ```java
+        // 设置全局跨域
+        router.setCors("*", List.of("*"), List.of("*"))
+    ```
+
 ### 关于拦截器的操作
 
 在这个框架中，建议使用PathInterceptor而非使用Servlet中的Filter，因为Interceptor的设置颗粒度可以更好的把控，同时支持`/*`和`**`的通配符
