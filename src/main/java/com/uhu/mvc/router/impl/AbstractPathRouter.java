@@ -39,7 +39,6 @@ public class AbstractPathRouter implements PathRouter {
     private final Map<String, List<PathInterceptor>> interceptorMap = new ConcurrentHashMap<>();
     private final Map<String, List<String>> excludeInterceptMap = new ConcurrentHashMap<>();
     private final Map<PathInterceptor, InterceptHandler> interceptorHandlerMap = new ConcurrentHashMap<>();
-
     private final Map<String, Map<String, PathHandler>> methodMap = Map.of(
             "get", getHandlerMap,
             "post", postHandlerMap,

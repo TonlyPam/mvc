@@ -101,6 +101,21 @@ PathRouter router = new AbstractPathRouter()
                 .setInterceptResp(metadata -> "拦截成功");
 ```
 
+### 关于JSON返回值转换的设置
+
+在PathRouter接口中，存在`<T> PathRouter addJsonMessageConvert(Class<T> rowType, Function<T, ?> converter);`方法，供开发者自定义JSON的返回值类型转换
+
+场景：经常返回的对象中有Long类型的属性，传递回前端的时候会出现尾精度丢失问题，就需要配置一个Long ==> String的JSON转换器
+
+代码：
+```java
+// 添加json转换设置 (Long --> String)
+pathRouter.addJsonMessageConvert(Long.class, (value) -> {
+            return String.valueOf(value);
+        })
+```
+
+
 ## 三、关于RequestMetadata
 
 存储处理web请求的大部分功能
