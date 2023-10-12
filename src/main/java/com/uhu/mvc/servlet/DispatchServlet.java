@@ -37,7 +37,8 @@ public class DispatchServlet extends HttpServlet {
 
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        dispatchRequest(req, resp, metadata -> NULL);
+        router.setCors(resp);
+        resp.getWriter().close();
     }
 
     @Override
