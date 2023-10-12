@@ -30,6 +30,8 @@ public class Main {
         PathRouter router = new AbstractPathRouter()
                 // 设置全局响应类型
                 .setGlobalRespContentType(ContentType.JSON)
+                // 添加json转换设置 (Long --> String)
+                .addJsonMessageConvert(Long.class, String::valueOf)
                 // 添加一个Get路由
                 .addGet("/hello/{name}/{age}", metadata -> {
                     // 设置响应类型

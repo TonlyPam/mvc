@@ -2,12 +2,13 @@ package com.uhu.mvc.servlet;
 
 import cn.hutool.http.ContentType;
 import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import com.uhu.mvc.handler.ExceptionHandler;
 import com.uhu.mvc.handler.InterceptHandler;
 import com.uhu.mvc.handler.PathHandler;
 import com.uhu.mvc.interceptor.PathInterceptor;
-import com.uhu.mvc.router.PathRouter;
 import com.uhu.mvc.metadata.RequestMetadata;
+import com.uhu.mvc.router.PathRouter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -113,7 +114,11 @@ public class DispatchServlet extends HttpServlet {
         // 响应结果
         resp.setContentType(requestMetadata.getRespContentType().getValue());
         if (ContentType.JSON.getValue().equals(resp.getContentType())) {
-            handle = JSONUtil.toJsonStr(handle);
+            try {
+                handle = router.getObjectMapper().writeValueAsString(handle);
+            } catch (InvalidDefinitionException e) {
+                handle = JSONUtil.toJsonStr(handle);
+            }
         }
         resp.getWriter().write(handle.toString());
         resp.getWriter().close();

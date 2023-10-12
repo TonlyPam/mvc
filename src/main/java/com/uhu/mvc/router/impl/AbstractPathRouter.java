@@ -1,13 +1,21 @@
 package com.uhu.mvc.router.impl;
 
 import cn.hutool.http.ContentType;
-import com.uhu.mvc.handler.*;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.uhu.mvc.handler.ExceptionHandler;
+import com.uhu.mvc.handler.InterceptHandler;
+import com.uhu.mvc.handler.PathHandler;
 import com.uhu.mvc.interceptor.InterceptorSetter;
 import com.uhu.mvc.interceptor.PathInterceptor;
 import com.uhu.mvc.interceptor.impl.InterceptorSetterImpl;
 import com.uhu.mvc.router.PathRouter;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -21,6 +29,7 @@ import java.util.function.Function;
 public class AbstractPathRouter implements PathRouter {
 
     private static final ThreadLocal<Map<String, String>> PATH_VARIABLE_MAP_HOLDER = new ThreadLocal<>();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     private final Map<String, ExceptionHandler<Throwable>> exceptionHandlerMap = new ConcurrentHashMap<>();
     private final Map<String, PathHandler> getHandlerMap = new ConcurrentHashMap<>();
@@ -262,5 +271,25 @@ public class AbstractPathRouter implements PathRouter {
         // 匹配成功
         PATH_VARIABLE_MAP_HOLDER.set(pathVariableMap);
         return true;
+    }
+
+    @Override
+    public <T> PathRouter addJsonMessageConvert(Class<T> rowType, Function<T, ?> converter) {
+        SimpleModule simpleModule = new SimpleModule();
+        JsonSerializer<T> serializer = new JsonSerializer<>() {
+            @Override
+            public void serialize(T t, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+                Object out = converter.apply(t);
+                jsonGenerator.writeObject(out);
+            }
+        };
+        simpleModule.addSerializer(rowType, serializer);
+        mapper.registerModule(simpleModule);
+        return this;
+    }
+
+    @Override
+    public ObjectMapper getObjectMapper() {
+        return mapper;
     }
 }

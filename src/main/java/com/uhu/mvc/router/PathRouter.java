@@ -1,17 +1,18 @@
 package com.uhu.mvc.router;
 
 import cn.hutool.http.ContentType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uhu.mvc.handler.ExceptionHandler;
 import com.uhu.mvc.handler.InterceptHandler;
 import com.uhu.mvc.handler.PathHandler;
 import com.uhu.mvc.interceptor.InterceptorSetter;
 import com.uhu.mvc.interceptor.PathInterceptor;
 import com.uhu.mvc.router.impl.AbstractPathRouter;
-import org.eclipse.jetty.http.HttpMethod;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @Description: 路径处理器
@@ -143,4 +144,18 @@ public interface PathRouter {
      * @param response 响应
      */
     void setCors(HttpServletResponse response);
+
+    /**
+     * 添加json消息转换器
+     * @param rowType 原类型
+     * @param converter 原类型转目标类型转换器
+     * @return 自身
+     */
+    <T> PathRouter addJsonMessageConvert(Class<T> rowType, Function<T, ?> converter);
+
+    /**
+     * 获取ObjectMapper对象
+     * @return objectMapper
+     */
+    ObjectMapper getObjectMapper();
 }
