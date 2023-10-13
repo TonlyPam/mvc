@@ -18,18 +18,12 @@ import java.util.Objects;
  * @Author: Bomber
  * @CreateTime: 2023/10/8 8:50
  */
-@Data
 @Slf4j
 @Accessors(chain = true)
-public class JettyWebServer implements Runnable {
-
-    private String applicationName;
-    private String host = "localhost";
-    private int port = 8080;
-    private final PathRouter router;
+public class JettyWebServer extends AbstractWebServer {
 
     public JettyWebServer(PathRouter router) {
-        this.router = router;
+        super(router);
     }
 
     @Override
