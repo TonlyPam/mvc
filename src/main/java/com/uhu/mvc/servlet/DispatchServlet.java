@@ -105,6 +105,7 @@ public class DispatchServlet extends HttpServlet {
                 writer.println(e.getClass().getTypeName() + ":" + e.getMessage());
                 Arrays.stream(e.getStackTrace()).forEach(stackTraceElement -> writer.println(stackTraceElement.toString()));
                 writer.close();
+                e.printStackTrace();
                 return;
             }
 
