@@ -75,6 +75,7 @@ public class RequestMetadata {
         } catch (JSONException e) {
             if (Objects.isNull(value)) return null;
             Object result = null;
+            if (String.class.equals(clazz)) result = value;
             if (Byte.class.equals(clazz)) result = Byte.valueOf(value);
             if (Short.class.equals(clazz)) result = Short.valueOf(value);
             if (Integer.class.equals(clazz)) result = Integer.valueOf(value);
