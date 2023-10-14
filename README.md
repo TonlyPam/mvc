@@ -127,3 +127,38 @@ pathRouter.addJsonMessageConvert(Long.class, (value) -> {
 - 获取pathVariable
 - 获取header
 - 设置响应类型`setRespContentType`
+
+## 关于ORM框架
+
+自带了`MybatisPlus`的工具对象，如下即可获取DAO（MAPPER）和SERVICE对象
+
+```java
+public class Main {
+    public static void main(String[] args) throws Exception {
+        // 创建orm框架的工具类
+        MybatisPlus mybatisPlus = MybatisPlus.build()
+                .setId("default")
+                .setDriver(Driver.class.getTypeName())
+                .setUrl("jdbc:mysql://localhost:3306/dining_app")
+                .setUsername("root")
+                .setPassword("123456")
+                .setDataSourceFactory(new PooledDataSourceFactory())
+                .setTransactionFactory(new JdbcTransactionFactory())
+                .setMapperPackage("com.uhu.mvc.main")
+                .build();
+
+        StudentMapper studentMapper = mybatisPlus.getMapper(StudentMapper.class);
+        ServiceImpl<StudentMapper, Student> studentService = mybatisPlus.getService(StudentMapper.class, Student.class);
+}
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+class Student {
+    String name;
+    Integer age;
+}
+
+@Mapper
+interface StudentMapper extends BaseMapper<Student> {}
+```
