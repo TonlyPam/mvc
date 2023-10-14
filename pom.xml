@@ -17,6 +17,7 @@
         <hutool.version>5.8.20</hutool.version>
         <jackson.version>2.14.2</jackson.version>
         <undertow.version>2.3.8.Final</undertow.version>
+        <mybatisplus.version>3.5.2</mybatisplus.version>
     </properties>
 
     <dependencies>
@@ -60,7 +61,11 @@
             <artifactId>undertow-servlet</artifactId>
             <version>${undertow.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus</artifactId>
+            <version>${mybatisplus.version}</version>
+        </dependency>
 
     </dependencies>
 </project>
