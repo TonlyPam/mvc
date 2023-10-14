@@ -1,13 +1,15 @@
-package com.uhu.mvc.util;
+package com.uhu.mvc.orm;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.MybatisSqlSessionFactoryBuilder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.Data;
+import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.datasource.pooled.PooledDataSourceFactory;
 import org.apache.ibatis.mapping.Environment;
@@ -20,17 +22,25 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
-public class MybatisPlusUtil {
+public class MybatisPlus {
 
     private final SqlSession sqlSession;
 
-    public MybatisPlusUtil(Environment environment) {
-        SqlSessionFactory factory = new MybatisSqlSessionFactoryBuilder().build(new Configuration(environment));
+    private final MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
+
+    public MybatisPlus(Environment environment, String mapperPackage) {
+        Configuration configuration = new Configuration(environment);
+        MapperRegistry mapperRegistry = configuration.getMapperRegistry();
+        mapperRegistry.addMappers(mapperPackage);
+        SqlSessionFactory factory = new MybatisSqlSessionFactoryBuilder().build(configuration);
         sqlSession = factory.openSession(true);
-        MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
-        mybatisPlusInterceptor.addInnerInterceptor(new PaginationInnerInterceptor());
         sqlSession.getConfiguration().addInterceptor(mybatisPlusInterceptor);
         sqlSession.getConfiguration().setCacheEnabled(false);
+    }
+
+    public MybatisPlus addInterceptor(InnerInterceptor interceptor) {
+        mybatisPlusInterceptor.addInnerInterceptor(interceptor);
+        return this;
     }
 
     public static UtilBuilder build() {
@@ -79,8 +89,8 @@ public class MybatisPlusUtil {
     }
 
     @Accessors(chain = true)
-    @Data
-    static class UtilBuilder {
+    @Setter
+    public static class UtilBuilder {
 
         private String id = IdUtil.fastUUID();
         private TransactionFactory transactionFactory;
@@ -90,6 +100,7 @@ public class MybatisPlusUtil {
         private String driver;
         private String username;
         private String password;
+        private String mapperPackage;
 
         public UtilBuilder setTransactionFactory(Class<? extends TransactionFactory> transactionFactoryClass) {
             try {
@@ -100,7 +111,12 @@ public class MybatisPlusUtil {
             return this;
         }
 
-        public MybatisPlusUtil build() {
+        public UtilBuilder setTransactionFactory(TransactionFactory transactionFactory) {
+            this.transactionFactory = transactionFactory;
+            return this;
+        }
+
+        public MybatisPlus build() {
             Properties properties = new Properties();
             properties.setProperty("driver", driver);
             properties.setProperty("url", url);
@@ -108,7 +124,7 @@ public class MybatisPlusUtil {
             properties.setProperty("password", password);
             dataSourceFactory.setProperties(properties);
             Environment environment = new Environment(id, transactionFactory, dataSourceFactory.getDataSource());
-            return new MybatisPlusUtil(environment);
+            return new MybatisPlus(environment, mapperPackage);
         }
     }
 }
