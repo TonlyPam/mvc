@@ -161,7 +161,8 @@ class Student {
 
 @Mapper
 interface StudentMapper extends BaseMapper<Student> {}
-```# MY-MVC
+```
+# MY-MVC
 
 This is a minimalist mvc framework that can help you quickly develop a web app.
 
